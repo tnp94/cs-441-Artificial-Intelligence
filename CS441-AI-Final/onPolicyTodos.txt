@@ -1,0 +1,39 @@
+This will just be a list of to-do items from the On Policy MCM agent.
+(This is helpful for me in remembering what's done/next steps/etc)
+
+- [ ] calculate Return Values from the first visit of each state the end of each episode
+- [ ] decide on if we want to use a discount (gamma) or not. Potential default = 1 (no gamma)
+- [ ] Add a Returns(s,a), and empty list that stores all returns for all state action pairs.
+        This is used to c
+- [ ] We should make a random agent as a control/baseline to see if our agent is working any better!
+
+
+Pseudo Code for Sutton & Barto:
+Can be viewed: https://find1dream.github.io/assets/img/RL/MC/MC_on-policy-first-visit-control.png
+small epsilon > 0
+initialize:
+    pi <- arbitrary epsilon-soft policy
+    Q(s,a) <- state array to track state/action pairs and reward values from those pairs
+        Note: this is called QMatrix in OnPolicyMC.py
+    Returns(s,a) < - tracking return (reward) values for state action pairs.
+        Note: This is called ReturnQMatrix in OnPolicyMC.pc
+        It stores: state, action, amount of times visited such pair, and total reward from that state action pair.
+Loop:
+    Generate an episode following pi until completion: S0, A0, R1, ... S(t-1), A(t-1), R(T)
+    G <- 0 Note: This represents total reward from the first visit at each state action pair.
+            I believe it is cumulative
+    Loop for each step in epsiode, t = T-1, T-2, ... , 0: (Iterating backwards through "history" of episode)
+        G = GAMMA * G + R(t+1)
+        Unless pair St, At appears in S0, A0, R1, ... S(t-1), A(t-1), R(T):
+            Append G to Returns(St,At)
+            Q(St,At) <- average(Returns(St,At))
+            A* <- argmax(action) from Q(St, actions)
+            For all Actions in the action list for St:
+                pi(action,St) <- (
+                if action = A*: 1-epsilon + epsilon/absval(allacttions(St))
+                Else (action =/= A*): epsilon/absval(allactions(St))
+            Note: I'm not really sure how the last updating of the policy works. Sorry if it gets confusing.
+
+Summary/Pseudo Code for our purposes:
+(feel free to update/add, this is how I think best.)
+Agent take actions
